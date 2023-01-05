@@ -43,34 +43,58 @@ func run() {
 
 	sprite1 := pixel.NewSprite(pic1, pic1.Bounds())
 
-	pic2, err := loadPicture(spriteName2)
-	if err != nil {
-		panic(err)
-	}
+	//pic2, err := loadPicture(spriteName2)
+	//if err != nil {
+	//	panic(err)
+	//}
 
-	sprite2 := pixel.NewSprite(pic2, pic2.Bounds())
+	//sprite2 := pixel.NewSprite(pic2, pic2.Bounds())
 
 	win.Clear(colornames.Grey)
 	//win.MakePicture()
 
 	currentSprite = sprite1
 
-	currentSprite.Draw(win, pixel.IM.Moved(movement))
+	//currentSprite.Draw(win, pixel.IM.Moved(movement))
 
+	var x = 0
+	var step = float64(52)
+	var minX = float64(0)
+	var maxX = step
+	sonicPic, err := loadPicture("sonic_walk.png")
+	if err != nil {
+		panic(err)
+	}
 	for !win.Closed() {
-		count = count + 1
-		if count%2 == 0 {
-			currentSprite = sprite1
+		if x < 5 {
+			minX = minX + step
+			maxX = maxX + step
 		} else {
-			currentSprite = sprite2
+			x = 1
+			minX = 0
+			maxX = step
 		}
+		x = x + 1
+		fmt.Printf("Moving......xMin:%f xMax:%f\n", minX, maxX)
+
+		//sonicSprite := pixel.NewSprite(sonicPic, pixel.R(float64(50*x), 0, float64(50*x), 50))
+		sonicSprite := pixel.NewSprite(sonicPic, pixel.R(minX, 0, maxX, 50))
+
+		//
+		//
+		//count = count + 1
+		//if count%2 == 0 {
+		//	currentSprite = sprite1
+		//} else {
+		//	currentSprite = sprite2
+		//}
 		i = i + 5
 		fmt.Printf("Moving......x:%f y:%f\n", i, i)
-		time.Sleep(500 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 		win.Update()
 		win.Clear(colornames.Grey)
-		movement = pixel.Vec{i, 600}
-		currentSprite.Draw(win, pixel.IM.Moved(movement))
+		//movement = pixel.Vec{i, 600}
+		sonicSprite.Draw(win, pixel.IM.Moved(movement))
 
 	}
 
