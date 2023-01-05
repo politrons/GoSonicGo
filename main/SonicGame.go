@@ -18,43 +18,67 @@ func main() {
 func run() {
 
 	win := createWindow()
-	greenHillPic, sonicStopPic, sonicRightPic := loadGamePictures()
+	greenHillPic, sonicStopPic, sonicLeftPic, sonicRightPic := loadGamePictures()
 	greenHillBackground := drawBackground(greenHillPic, win)
 
-	var step = float64(300)
+	//Initial sprite position in the window
+	var step = float64(650)
 	var movement = pixel.Vec{step, step}
 	var frame = 0
-	var pixelRec = float64(36.6)
-	var minX = float64(0)
-	var maxX = pixelRec
+
+	//Initial sprite rect min,max vector for Right animation
+	var pixelRightRect = 36.6
+	var minRightX = float64(0)
+	var maxRightX = pixelRightRect
+
+	//Initial sprite rect min,max vector for Left animation
+	var pixelLeftRect = float64(37.9)
+	var minLeftX = (pixelLeftRect + 1.8) * 8
+	var maxLeftX = pixelLeftRect * 9
 
 	for !win.Closed() {
 		win.Update()
 		win.Clear(colornames.Grey)
 		greenHillBackground.Draw(win, pixel.IM)
+
 		if win.Pressed(pixelgl.KeyRight) {
 			if frame < 9 {
-				minX = minX + pixelRec
-				maxX = maxX + pixelRec
+				minRightX = minRightX + pixelRightRect
+				maxRightX = maxRightX + pixelRightRect
 			} else {
-				frame = 1
-				minX = 0
-				maxX = pixelRec
+				frame = 0
+				minRightX = 0
+				maxRightX = pixelRightRect
 			}
 			frame = frame + 1
-			fmt.Printf("Moving......xMin:%f xMax:%f\n", minX, maxX)
-			sonicSprite := pixel.NewSprite(sonicRightPic, pixel.R(minX, 0, maxX, 50))
+			fmt.Printf("Moving right... frame:%d .xMin:%f xMax:%f\n", frame, minRightX, maxRightX)
+			sonicSprite := pixel.NewSprite(sonicRightPic, pixel.R(minRightX, 0, maxRightX, 50))
 
 			step = step + 5
 			movement = pixel.Vec{step, 220}
 			sonicSprite.Draw(win, pixel.IM.Moved(movement))
+		} else if win.Pressed(pixelgl.KeyLeft) {
+			if frame < 9 {
+				minLeftX = minLeftX - (pixelLeftRect + 1.8)
+				maxLeftX = maxLeftX - pixelLeftRect
+			} else {
+				frame = 0
+				minLeftX = (pixelLeftRect + 1.8) * 8
+				maxLeftX = pixelLeftRect * 9
+			}
+			frame = frame + 1
+			fmt.Printf("Moving left... frame:%d .xMin:%f xMax:%f\n", frame, minLeftX, maxLeftX)
+			sonicSprite := pixel.NewSprite(sonicLeftPic, pixel.R(minLeftX, 0, maxLeftX, 50))
+
+			step = step - 5
+			movement = pixel.Vec{X: step, Y: 220}
+			sonicSprite.Draw(win, pixel.IM.Moved(movement))
 		} else {
-			fmt.Printf("Stoped......xMin:%f xMax:%f\n", minX, maxX)
-			movement = pixel.Vec{step, 220}
-			sonicSprite := pixel.NewSprite(sonicStopPic, pixel.R(0, 0, pixelRec, 50))
+			movement = pixel.Vec{X: step, Y: 220}
+			sonicSprite := pixel.NewSprite(sonicStopPic, pixel.R(0, 0, pixelRightRect, 50))
 			sonicSprite.Draw(win, pixel.IM.Moved(movement))
 		}
-		time.Sleep(50 * time.Millisecond)
+		time.Sleep(40 * time.Millisecond)
 	}
 
 }
@@ -89,14 +113,15 @@ func createWindow() *pixelgl.Window {
 /**
 Function to load all game Pictures
 */
-func loadGamePictures() (pixel.Picture, pixel.Picture, pixel.Picture) {
+func loadGamePictures() (pixel.Picture, pixel.Picture, pixel.Picture, pixel.Picture) {
 	greenHillPic, err := loadPicture("green_hill.png")
 	sonicStopPic, err := loadPicture("sonic_stop.png")
+	sonicLeftPic, err := loadPicture("sonic_left.png")
 	sonicRightPic, err := loadPicture("sonic_right.png")
 	if err != nil {
 		panic(err)
 	}
-	return greenHillPic, sonicStopPic, sonicRightPic
+	return greenHillPic, sonicStopPic, sonicLeftPic, sonicRightPic
 }
 
 /**
