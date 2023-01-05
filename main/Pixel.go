@@ -15,14 +15,9 @@ func main() {
 	pixelgl.Run(run)
 }
 
-var spriteName1 = "enemy-right-1.png"
-var spriteName2 = "enemy-right-2.png"
-var currentSprite *pixel.Sprite
-var count = 0
-
 func run() {
 
-	var i = float64(600)
+	var i = float64(300)
 	var movement = pixel.Vec{i, i}
 	cfg := pixelgl.WindowConfig{
 		Title:  "Pixel Rocks!",
@@ -36,37 +31,25 @@ func run() {
 
 	win.SetSmooth(true)
 
-	pic1, err := loadPicture(spriteName1)
+	win.Clear(colornames.Grey)
+
+	greenHillPic, err := loadPicture("green_hill.png")
 	if err != nil {
 		panic(err)
 	}
-
-	sprite1 := pixel.NewSprite(pic1, pic1.Bounds())
-
-	//pic2, err := loadPicture(spriteName2)
-	//if err != nil {
-	//	panic(err)
-	//}
-
-	//sprite2 := pixel.NewSprite(pic2, pic2.Bounds())
-
-	win.Clear(colornames.Grey)
-	//win.MakePicture()
-
-	currentSprite = sprite1
-
-	//currentSprite.Draw(win, pixel.IM.Moved(movement))
+	greenHillBackground := pixel.NewSprite(greenHillPic, pixel.R(-1200, -800, 1200, 800))
+	greenHillBackground.Draw(win, pixel.IM)
 
 	var x = 0
-	var step = float64(52)
+	var step = float64(36.6)
 	var minX = float64(0)
 	var maxX = step
-	sonicPic, err := loadPicture("sonic_walk.png")
+	sonicPic, err := loadPicture("sonic_1.png")
 	if err != nil {
 		panic(err)
 	}
 	for !win.Closed() {
-		if x < 5 {
+		if x < 9 {
 			minX = minX + step
 			maxX = maxX + step
 		} else {
@@ -77,23 +60,16 @@ func run() {
 		x = x + 1
 		fmt.Printf("Moving......xMin:%f xMax:%f\n", minX, maxX)
 
-		//sonicSprite := pixel.NewSprite(sonicPic, pixel.R(float64(50*x), 0, float64(50*x), 50))
 		sonicSprite := pixel.NewSprite(sonicPic, pixel.R(minX, 0, maxX, 50))
 
-		//
-		//
-		//count = count + 1
-		//if count%2 == 0 {
-		//	currentSprite = sprite1
-		//} else {
-		//	currentSprite = sprite2
-		//}
 		i = i + 5
 		fmt.Printf("Moving......x:%f y:%f\n", i, i)
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(50 * time.Millisecond)
 		win.Update()
 		win.Clear(colornames.Grey)
-		//movement = pixel.Vec{i, 600}
+		greenHillBackground.Draw(win, pixel.IM)
+
+		movement = pixel.Vec{i, 220}
 		sonicSprite.Draw(win, pixel.IM.Moved(movement))
 
 	}
