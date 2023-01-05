@@ -17,8 +17,8 @@ func main() {
 
 func run() {
 
-	var i = float64(300)
-	var movement = pixel.Vec{i, i}
+	var step = float64(300)
+	var movement = pixel.Vec{step, step}
 	cfg := pixelgl.WindowConfig{
 		Title:  "Pixel Rocks!",
 		Bounds: pixel.R(0, 0, 1024, 768),
@@ -41,37 +41,47 @@ func run() {
 	greenHillBackground.Draw(win, pixel.IM)
 
 	var x = 0
-	var step = float64(36.6)
+	var pixelRec = float64(36.6)
 	var minX = float64(0)
-	var maxX = step
-	sonicPic, err := loadPicture("sonic_1.png")
+	var maxX = pixelRec
+
+	sonicStopPic, err := loadPicture("sonic_stop.png")
 	if err != nil {
 		panic(err)
 	}
+
+	sonicRightPic, err := loadPicture("sonic_right.png")
+	if err != nil {
+		panic(err)
+	}
+
 	for !win.Closed() {
-		if x < 9 {
-			minX = minX + step
-			maxX = maxX + step
-		} else {
-			x = 1
-			minX = 0
-			maxX = step
-		}
-		x = x + 1
-		fmt.Printf("Moving......xMin:%f xMax:%f\n", minX, maxX)
-
-		sonicSprite := pixel.NewSprite(sonicPic, pixel.R(minX, 0, maxX, 50))
-
-		i = i + 5
-		fmt.Printf("Moving......x:%f y:%f\n", i, i)
-		time.Sleep(50 * time.Millisecond)
 		win.Update()
 		win.Clear(colornames.Grey)
 		greenHillBackground.Draw(win, pixel.IM)
+		if win.Pressed(pixelgl.KeyRight) {
+			if x < 9 {
+				minX = minX + pixelRec
+				maxX = maxX + pixelRec
+			} else {
+				x = 1
+				minX = 0
+				maxX = pixelRec
+			}
+			x = x + 1
+			fmt.Printf("Moving......xMin:%f xMax:%f\n", minX, maxX)
+			sonicSprite := pixel.NewSprite(sonicRightPic, pixel.R(minX, 0, maxX, 50))
 
-		movement = pixel.Vec{i, 220}
-		sonicSprite.Draw(win, pixel.IM.Moved(movement))
-
+			step = step + 5
+			movement = pixel.Vec{step, 220}
+			sonicSprite.Draw(win, pixel.IM.Moved(movement))
+		} else {
+			fmt.Printf("Stoped......xMin:%f xMax:%f\n", minX, maxX)
+			movement = pixel.Vec{step, 220}
+			sonicSprite := pixel.NewSprite(sonicStopPic, pixel.R(0, 0, pixelRec, 50))
+			sonicSprite.Draw(win, pixel.IM.Moved(movement))
+		}
+		time.Sleep(50 * time.Millisecond)
 	}
 
 }
