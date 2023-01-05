@@ -29,13 +29,15 @@ var pixelLeftRect = float64(37.9)
 var minLeftX = (pixelLeftRect + 1.8) * 8
 var maxLeftX = pixelLeftRect * 9
 
+//Initial Pictures(Sprites) of the game
+var logoPic, greenHillPic, sonicStopPic, sonicLeftPic, sonicRightPic = loadGamePictures()
+
 func main() {
 	pixelgl.Run(run)
 }
 
 func run() {
 	win := createWindow()
-	logoPic, greenHillPic, sonicStopPic, sonicLeftPic, sonicRightPic := loadGamePictures()
 	greenHillBackground := pixel.NewSprite(greenHillPic, pixel.R(-1200, -800, 1200, 800))
 	logoPicture := pixel.NewSprite(logoPic, pixel.R(-824, -768, 1300, 768))
 	var logoTime = time.Now().Second() + introTime
@@ -47,16 +49,18 @@ func run() {
 	for !win.Closed() {
 		win.Update()
 		win.Clear(colornames.Grey)
-		animateGame(greenHillBackground, win, sonicRightPic, sonicLeftPic, sonicStopPic)
+		animateGame(greenHillBackground, win)
 	}
 }
 
+/**
+Function where we implement the key event handler over the window using [win.Pressed(Button)].
+Every time we press a key we start animation for the left, right, up and down, using the sprites per
+each Picture configured before.
+*/
 func animateGame(
 	greenHillBackground *pixel.Sprite,
 	win *pixelgl.Window,
-	sonicRightPic pixel.Picture,
-	sonicLeftPic pixel.Picture,
-	sonicStopPic pixel.Picture,
 ) {
 	greenHillBackground.Draw(win, pixel.IM)
 	if win.Pressed(pixelgl.KeyRight) {
