@@ -12,7 +12,7 @@ import (
 )
 
 //Intro time
-var introTime = 5
+var introTime = 3
 
 //Initial sprite position in the window
 var step = float64(650)
@@ -46,11 +46,7 @@ func run() {
 		win.Clear(colornames.Grey)
 		logoPicture.Draw(win, pixel.IM)
 	}
-	for !win.Closed() {
-		win.Update()
-		win.Clear(colornames.Grey)
-		animateGame(greenHillBackground, win)
-	}
+	animateGame(greenHillBackground, win)
 }
 
 /**
@@ -58,49 +54,62 @@ Function where we implement the key event handler over the window using [win.Pre
 Every time we press a key we start animation for the left, right, up and down, using the sprites per
 each Picture configured before.
 */
-func animateGame(
-	greenHillBackground *pixel.Sprite,
-	win *pixelgl.Window,
-) {
-	greenHillBackground.Draw(win, pixel.IM)
-	if win.Pressed(pixelgl.KeyRight) {
-		if frame < 9 {
-			minRightX = minRightX + pixelRightRect
-			maxRightX = maxRightX + pixelRightRect
+func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
+	for !win.Closed() {
+		win.Update()
+		win.Clear(colornames.Grey)
+		greenHillBackground.Draw(win, pixel.IM)
+		if win.Pressed(pixelgl.KeyRight) {
+			rightAnimation(win)
+		} else if win.Pressed(pixelgl.KeyLeft) {
+			leftAnimation(win)
 		} else {
-			frame = 0
-			minRightX = 0
-			maxRightX = pixelRightRect
+			stopAnimation(win)
 		}
-		frame = frame + 1
-		fmt.Printf("Moving right... frame:%d .xMin:%f xMax:%f\n", frame, minRightX, maxRightX)
-		sonicSprite := pixel.NewSprite(sonicRightPic, pixel.R(minRightX, 0, maxRightX, 50))
-
-		step = step + 5
-		movement = pixel.Vec{step, 220}
-		sonicSprite.Draw(win, pixel.IM.Moved(movement))
-	} else if win.Pressed(pixelgl.KeyLeft) {
-		if frame < 9 {
-			minLeftX = minLeftX - (pixelLeftRect + 1.8)
-			maxLeftX = maxLeftX - pixelLeftRect
-		} else {
-			frame = 0
-			minLeftX = (pixelLeftRect + 1.8) * 8
-			maxLeftX = pixelLeftRect * 9
-		}
-		frame = frame + 1
-		fmt.Printf("Moving left... frame:%d .xMin:%f xMax:%f\n", frame, minLeftX, maxLeftX)
-		sonicSprite := pixel.NewSprite(sonicLeftPic, pixel.R(minLeftX, 0, maxLeftX, 50))
-
-		step = step - 5
-		movement = pixel.Vec{X: step, Y: 220}
-		sonicSprite.Draw(win, pixel.IM.Moved(movement))
-	} else {
-		movement = pixel.Vec{X: step, Y: 220}
-		sonicSprite := pixel.NewSprite(sonicStopPic, pixel.R(0, 0, pixelRightRect, 50))
-		sonicSprite.Draw(win, pixel.IM.Moved(movement))
+		time.Sleep(40 * time.Millisecond)
 	}
-	time.Sleep(40 * time.Millisecond)
+}
+
+func stopAnimation(win *pixelgl.Window) {
+	movement = pixel.Vec{X: step, Y: 220}
+	sonicSprite := pixel.NewSprite(sonicStopPic, pixel.R(0, 0, pixelRightRect, 50))
+	sonicSprite.Draw(win, pixel.IM.Moved(movement))
+}
+
+func leftAnimation(win *pixelgl.Window) {
+	if frame < 9 {
+		minLeftX = minLeftX - (pixelLeftRect + 1.8)
+		maxLeftX = maxLeftX - pixelLeftRect
+	} else {
+		frame = 0
+		minLeftX = (pixelLeftRect + 1.8) * 8
+		maxLeftX = pixelLeftRect * 9
+	}
+	frame = frame + 1
+	fmt.Printf("Moving left... frame:%d .xMin:%f xMax:%f\n", frame, minLeftX, maxLeftX)
+	sonicSprite := pixel.NewSprite(sonicLeftPic, pixel.R(minLeftX, 0, maxLeftX, 50))
+
+	step = step - 5
+	movement = pixel.Vec{X: step, Y: 220}
+	sonicSprite.Draw(win, pixel.IM.Moved(movement))
+}
+
+func rightAnimation(win *pixelgl.Window) {
+	if frame < 9 {
+		minRightX = minRightX + pixelRightRect
+		maxRightX = maxRightX + pixelRightRect
+	} else {
+		frame = 0
+		minRightX = 0
+		maxRightX = pixelRightRect
+	}
+	frame = frame + 1
+	fmt.Printf("Moving right... frame:%d .xMin:%f xMax:%f\n", frame, minRightX, maxRightX)
+	sonicSprite := pixel.NewSprite(sonicRightPic, pixel.R(minRightX, 0, maxRightX, 50))
+
+	step = step + 5
+	movement = pixel.Vec{step, 220}
+	sonicSprite.Draw(win, pixel.IM.Moved(movement))
 }
 
 /**
