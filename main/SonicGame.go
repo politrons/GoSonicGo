@@ -17,58 +17,31 @@ func main() {
 
 func run() {
 
+	win := createWindow()
+	greenHillPic, sonicStopPic, sonicRightPic := loadGamePictures()
+	greenHillBackground := drawBackground(greenHillPic, win)
+
 	var step = float64(300)
 	var movement = pixel.Vec{step, step}
-	cfg := pixelgl.WindowConfig{
-		Title:  "Pixel Rocks!",
-		Bounds: pixel.R(0, 0, 1024, 768),
-		VSync:  true,
-	}
-	win, err := pixelgl.NewWindow(cfg)
-	if err != nil {
-		panic(err)
-	}
-
-	win.SetSmooth(true)
-
-	win.Clear(colornames.Grey)
-
-	greenHillPic, err := loadPicture("green_hill.png")
-	if err != nil {
-		panic(err)
-	}
-	greenHillBackground := pixel.NewSprite(greenHillPic, pixel.R(-1200, -800, 1200, 800))
-	greenHillBackground.Draw(win, pixel.IM)
-
-	var x = 0
+	var frame = 0
 	var pixelRec = float64(36.6)
 	var minX = float64(0)
 	var maxX = pixelRec
-
-	sonicStopPic, err := loadPicture("sonic_stop.png")
-	if err != nil {
-		panic(err)
-	}
-
-	sonicRightPic, err := loadPicture("sonic_right.png")
-	if err != nil {
-		panic(err)
-	}
 
 	for !win.Closed() {
 		win.Update()
 		win.Clear(colornames.Grey)
 		greenHillBackground.Draw(win, pixel.IM)
 		if win.Pressed(pixelgl.KeyRight) {
-			if x < 9 {
+			if frame < 9 {
 				minX = minX + pixelRec
 				maxX = maxX + pixelRec
 			} else {
-				x = 1
+				frame = 1
 				minX = 0
 				maxX = pixelRec
 			}
-			x = x + 1
+			frame = frame + 1
 			fmt.Printf("Moving......xMin:%f xMax:%f\n", minX, maxX)
 			sonicSprite := pixel.NewSprite(sonicRightPic, pixel.R(minX, 0, maxX, 50))
 
@@ -86,6 +59,50 @@ func run() {
 
 }
 
+/**
+Create the background sprite and draw in the window with the dimensions specify in pixel.R Rect
+*/
+func drawBackground(greenHillPic pixel.Picture, win *pixelgl.Window) *pixel.Sprite {
+	greenHillBackground := pixel.NewSprite(greenHillPic, pixel.R(-1200, -800, 1200, 800))
+	greenHillBackground.Draw(win, pixel.IM)
+	return greenHillBackground
+}
+
+/**
+Using Pixel Library we create Windows using a previous [WindowConfig] with the dimension, vsync, title.
+We also set smooth to true to make the animation more smooth and less pixely.
+*/
+func createWindow() *pixelgl.Window {
+	cfg := pixelgl.WindowConfig{
+		Title:  "Go Sonic Go!",
+		Bounds: pixel.R(0, 0, 1024, 768),
+		VSync:  true,
+	}
+	win, err := pixelgl.NewWindow(cfg)
+	if err != nil {
+		panic(err)
+	}
+	win.SetSmooth(true)
+	return win
+}
+
+/**
+Function to load all game Pictures
+*/
+func loadGamePictures() (pixel.Picture, pixel.Picture, pixel.Picture) {
+	greenHillPic, err := loadPicture("green_hill.png")
+	sonicStopPic, err := loadPicture("sonic_stop.png")
+	sonicRightPic, err := loadPicture("sonic_right.png")
+	if err != nil {
+		panic(err)
+	}
+	return greenHillPic, sonicStopPic, sonicRightPic
+}
+
+/**
+Function to load a game Pictures from a path using [os.Open] to get a file, [image] Decode to obtain an image
+and from Pixel library [PictureDataFromImage] to create a [Picture] type from [Image]
+*/
 func loadPicture(path string) (pixel.Picture, error) {
 	file, err := os.Open(path)
 	if err != nil {
