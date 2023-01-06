@@ -11,6 +11,14 @@ import (
 	"time"
 )
 
+type SonicSprites struct {
+	picture pixel.Picture
+}
+
+type DrawFeature interface {
+	drawPicture(window pixelgl.Window, minX float64, maxX float64)
+}
+
 //Intro time
 var introTime = 3
 
@@ -38,8 +46,8 @@ func main() {
 
 func run() {
 	win := createWindow()
-	greenHillBackground := pixel.NewSprite(greenHillPic, pixel.R(-1200, -800, 1200, 800))
-	logoPicture := pixel.NewSprite(logoPic, pixel.R(-824, -768, 1300, 768))
+	greenHillBackground := pixel.NewSprite(greenHillPic.picture, pixel.R(-1200, -800, 1200, 800))
+	logoPicture := pixel.NewSprite(logoPic.picture, pixel.R(-824, -768, 1300, 768))
 	var logoTime = time.Now().Second() + introTime
 	for time.Now().Second() < logoTime {
 		win.Update()
@@ -71,9 +79,7 @@ func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
 }
 
 func stopAnimation(win *pixelgl.Window) {
-	movement = pixel.Vec{X: step, Y: 220}
-	sonicSprite := pixel.NewSprite(sonicStopPic, pixel.R(0, 0, pixelRightRect, 50))
-	sonicSprite.Draw(win, pixel.IM.Moved(movement))
+	sonicStopPic.drawPicture(win, 0, pixelRightRect)
 }
 
 func leftAnimation(win *pixelgl.Window) {
@@ -86,12 +92,8 @@ func leftAnimation(win *pixelgl.Window) {
 		maxLeftX = pixelLeftRect * 9
 	}
 	frame = frame + 1
-	fmt.Printf("Moving left... frame:%d .xMin:%f xMax:%f\n", frame, minLeftX, maxLeftX)
-	sonicSprite := pixel.NewSprite(sonicLeftPic, pixel.R(minLeftX, 0, maxLeftX, 50))
-
 	step = step - 5
-	movement = pixel.Vec{X: step, Y: 220}
-	sonicSprite.Draw(win, pixel.IM.Moved(movement))
+	sonicLeftPic.drawPicture(win, minLeftX, maxLeftX)
 }
 
 func rightAnimation(win *pixelgl.Window) {
@@ -104,10 +106,17 @@ func rightAnimation(win *pixelgl.Window) {
 		maxRightX = pixelRightRect
 	}
 	frame = frame + 1
-	fmt.Printf("Moving right... frame:%d .xMin:%f xMax:%f\n", frame, minRightX, maxRightX)
-	sonicSprite := pixel.NewSprite(sonicRightPic, pixel.R(minRightX, 0, maxRightX, 50))
-
 	step = step + 5
+	sonicRightPic.drawPicture(win, minRightX, maxRightX)
+}
+
+/**
+Implementation of [SonicSprites] to draw the specific sprite in the window.
+Using interface each group of sprites invokes this method, avoiding type mismatch
+*/
+func (pic SonicSprites) drawPicture(win *pixelgl.Window, minX float64, maxX float64) {
+	fmt.Printf("Moving... frame:%d .xMin:%f xMax:%f\n", frame, minRightX, maxRightX)
+	sonicSprite := pixel.NewSprite(pic.picture, pixel.R(minX, 0, maxX, 50))
 	movement = pixel.Vec{step, 220}
 	sonicSprite.Draw(win, pixel.IM.Moved(movement))
 }
@@ -133,7 +142,7 @@ func createWindow() *pixelgl.Window {
 /**
 Function to load all game Pictures
 */
-func loadGamePictures() (pixel.Picture, pixel.Picture, pixel.Picture, pixel.Picture, pixel.Picture) {
+func loadGamePictures() (SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites) {
 	logoPic, err := loadPicture("sprites/logo.png")
 	greenHillPic, err := loadPicture("sprites/green_hill.png")
 	sonicStopPic, err := loadPicture("sprites/sonic_stop.png")
@@ -149,15 +158,15 @@ func loadGamePictures() (pixel.Picture, pixel.Picture, pixel.Picture, pixel.Pict
 Function to load a game Pictures from a path using [os.Open] to get a file, [image] Decode to obtain an image
 and from Pixel library [PictureDataFromImage] to create a [Picture] type from [Image]
 */
-func loadPicture(path string) (pixel.Picture, error) {
+func loadPicture(path string) (SonicSprites, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return SonicSprites{}, err
 	}
 	defer file.Close()
 	img, _, err := image.Decode(file)
 	if err != nil {
-		return nil, err
+		return SonicSprites{}, err
 	}
-	return pixel.PictureDataFromImage(img), nil
+	return SonicSprites{pixel.PictureDataFromImage(img)}, nil
 }
