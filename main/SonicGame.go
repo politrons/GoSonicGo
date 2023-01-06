@@ -25,7 +25,8 @@ var logoPic,
 	sonicStopPic,
 	sonicLeftPic,
 	sonicRightPic,
-	sonicUpPic = loadGamePictures()
+	sonicUpPic,
+	sonicDownPic = loadGamePictures()
 
 func main() {
 	pixelgl.Run(run)
@@ -60,9 +61,12 @@ func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
 			leftAnimation(win)
 		} else if win.Pressed(pixelgl.KeyUp) {
 			upAnimation(win)
+		} else if win.Pressed(pixelgl.KeyDown) {
+			downAnimation(win)
 		} else {
 			stopAnimation(win)
 			resetUpVector()
+			resetDownVector()
 		}
 		time.Sleep(40 * time.Millisecond)
 	}
@@ -79,6 +83,15 @@ func upAnimation(win *pixelgl.Window) {
 		frame = frame + 1
 	}
 	sonicUpPic.drawPicture(win, minUpX, maxUpX)
+}
+
+func downAnimation(win *pixelgl.Window) {
+	if frame < 5 {
+		minDownX = minDownX + pixelDownRect
+		maxDownX = maxDownX + pixelDownRect
+		frame = frame + 1
+	}
+	sonicDownPic.drawPicture(win, minDownX, maxDownX)
 }
 
 func leftAnimation(win *pixelgl.Window) {
@@ -141,17 +154,19 @@ func createWindow() *pixelgl.Window {
 /**
 Function to load all game Pictures
 */
-func loadGamePictures() (SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites) {
+func loadGamePictures() (SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites) {
 	logoPic, err := loadPicture("sprites/logo.png")
 	greenHillPic, err := loadPicture("sprites/green_hill.png")
 	sonicStopPic, err := loadPicture("sprites/sonic_stop.png")
 	sonicLeftPic, err := loadPicture("sprites/sonic_left.png")
 	sonicRightPic, err := loadPicture("sprites/sonic_right.png")
 	sonicUpPic, err := loadPicture("sprites/sonic_up.png")
+	sonicDownPic, err := loadPicture("sprites/sonic_down.png")
+
 	if err != nil {
 		panic(err)
 	}
-	return logoPic, greenHillPic, sonicStopPic, sonicLeftPic, sonicRightPic, sonicUpPic
+	return logoPic, greenHillPic, sonicStopPic, sonicLeftPic, sonicRightPic, sonicUpPic, sonicDownPic
 }
 
 /**
