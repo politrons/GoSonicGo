@@ -30,6 +30,7 @@ var logoPic,
 	sonicWaitingPic = loadGamePictures()
 
 func main() {
+	go startAudio()
 	pixelgl.Run(run)
 }
 
