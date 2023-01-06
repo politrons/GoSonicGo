@@ -27,10 +27,10 @@ var logoPic,
 	sonicRightPic,
 	sonicUpPic,
 	sonicDownPic,
-	sonicWaitingPic = loadGamePictures()
+	sonicWaitingPic,
+	sonicBallPic = loadGamePictures()
 
 func main() {
-	go startAudio()
 	pixelgl.Run(run)
 }
 
@@ -38,6 +38,7 @@ func run() {
 	win := createWindow()
 	greenHillBackground := pixel.NewSprite(greenHillPic.picture, pixel.R(-1200, -800, 1200, 800))
 	logoPicture := pixel.NewSprite(logoPic.picture, pixel.R(-824, -768, 1300, 768))
+	//startIntroTheme()
 	var logoTime = time.Now().Second() + introTime
 	for time.Now().Second() < logoTime {
 		win.Update()
@@ -53,6 +54,7 @@ Every time we press a key we start animation for the left, right, up and down, u
 each Picture configured before.
 */
 func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
+	go startMainTheme()
 	for !win.Closed() {
 		win.Update()
 		win.Clear(colornames.Grey)
@@ -68,6 +70,10 @@ func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
 		} else if win.Pressed(pixelgl.KeyUp) {
 			checkLastKeyPressed(pixelgl.KeyUp)
 			upAnimation(win)
+			resetWaitTime()
+		} else if win.Pressed(pixelgl.KeyDown) && win.Pressed(pixelgl.KeySpace) {
+			checkLastKeyPressed(pixelgl.KeyDown)
+			ballAnimation(win)
 			resetWaitTime()
 		} else if win.Pressed(pixelgl.KeyDown) {
 			checkLastKeyPressed(pixelgl.KeyDown)
@@ -120,6 +126,19 @@ func downAnimation(win *pixelgl.Window) {
 		frame = frame + 1
 	}
 	sonicDownPic.drawPicture(win, minDownX, maxDownX)
+}
+
+func ballAnimation(win *pixelgl.Window) {
+	if frame < 5 {
+		minBallX = minBallX + pixelBallRect
+		maxBallX = maxBallX + pixelBallRect
+		frame = frame + 1
+	} else {
+		frame = 0
+		minBallX = 0
+		maxBallX = pixelBallRect
+	}
+	sonicBallPic.drawPicture(win, minBallX, maxBallX)
 }
 
 func leftAnimation(win *pixelgl.Window) {
@@ -182,7 +201,7 @@ func createWindow() *pixelgl.Window {
 /**
 Function to load all game Pictures
 */
-func loadGamePictures() (SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites) {
+func loadGamePictures() (SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites) {
 	logoPic, err := loadPicture("sprites/logo.png")
 	greenHillPic, err := loadPicture("sprites/green_hill.png")
 	sonicStopPic, err := loadPicture("sprites/sonic_stop.png")
@@ -191,11 +210,12 @@ func loadGamePictures() (SonicSprites, SonicSprites, SonicSprites, SonicSprites,
 	sonicUpPic, err := loadPicture("sprites/sonic_up.png")
 	sonicDownPic, err := loadPicture("sprites/sonic_down.png")
 	sonicWaitingPic, err := loadPicture("sprites/sonic_waiting.png")
+	sonicBallPic, err := loadPicture("sprites/sonic_ball.png")
 
 	if err != nil {
 		panic(err)
 	}
-	return logoPic, greenHillPic, sonicStopPic, sonicLeftPic, sonicRightPic, sonicUpPic, sonicDownPic, sonicWaitingPic
+	return logoPic, greenHillPic, sonicStopPic, sonicLeftPic, sonicRightPic, sonicUpPic, sonicDownPic, sonicWaitingPic, sonicBallPic
 }
 
 /**

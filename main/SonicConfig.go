@@ -65,3 +65,8 @@ var maxWaitX = pixelWaitRect
 func resetWaitTime() {
 	waitingTime = time.Now().Second()
 }
+
+//Initial sprite rect min,max vector for Down animation
+var pixelBallRect = float64(30)
+var minBallX = float64(0)
+var maxBallX = pixelBallRect
