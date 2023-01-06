@@ -1,8 +1,12 @@
 # Go Sonic Go
 
+Author Pablo Picouto Garcia
+
+Is this repo useful? Please ⭑Star this repository and share the love.
+
 ![My image](img/title.png)
 
-A Sonic engine implemented using [pixel](https://github.com/faiface/pixel) animation and [beep](https://github.com/faiface/beep) for audio in Go.
+A Sonic engine implemented using [pixel](https://github.com/faiface/pixel) for animations and [beep](https://github.com/faiface/beep) for audio in Go.
 
 https://user-images.githubusercontent.com/2054461/211116034-de51001f-e8f9-4282-bec2-b1da2f1584d8.mov
 
