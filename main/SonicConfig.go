@@ -1,6 +1,10 @@
 package main
 
-import "github.com/faiface/pixel"
+import (
+	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/pixelgl"
+	"time"
+)
 
 //Intro time
 var introTime = 1
@@ -9,6 +13,17 @@ var introTime = 1
 var step = float64(650)
 var movement = pixel.Vec{X: step, Y: step}
 var frame = 0
+var waitingTime = time.Now().Second()
+
+//Persist and check the latest keyPressed to restart frame.
+var lastKeyPressed pixelgl.Button
+
+func checkLastKeyPressed(button pixelgl.Button) {
+	if lastKeyPressed != button {
+		frame = 0
+	}
+	lastKeyPressed = button
+}
 
 //Initial sprite rect min,max vector for Right animation
 var pixelRightRect = 36.6
@@ -40,4 +55,13 @@ func resetDownVector() {
 	frame = 0
 	minDownX = float64(0)
 	maxDownX = pixelDownRect
+}
+
+//Initial sprite rect min,max vector for Up animation
+var pixelWaitRect = float64(33)
+var minWaitX = float64(0)
+var maxWaitX = pixelWaitRect
+
+func resetWaitTime() {
+	waitingTime = time.Now().Second()
 }
