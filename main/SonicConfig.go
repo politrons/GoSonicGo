@@ -7,7 +7,7 @@ import (
 )
 
 //Intro time
-var introTime = 1
+var introTime = 3
 
 //Initial sprite position in the window
 var originalX = float64(650)

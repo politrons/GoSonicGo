@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
@@ -46,6 +45,8 @@ func run() {
 		win.Clear(colornames.Grey)
 		logoPicture.Draw(win, pixel.IM)
 	}
+	go startMainTheme()
+	go gravity()
 	animateGame(greenHillBackground, win)
 }
 
@@ -55,7 +56,6 @@ Every time we press a key we start animation for the left, right, up and down, u
 each Picture configured before.
 */
 func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
-	go startMainTheme()
 	for !win.Closed() {
 		win.Update()
 		win.Clear(colornames.Grey)
@@ -63,10 +63,12 @@ func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
 		if win.Pressed(pixelgl.KeyDown) && win.Pressed(pixelgl.KeySpace) {
 			checkLastKeyPressed(pixelgl.KeyDown)
 			ballAnimation(win)
+			yStep = yStep + 2
 			resetWaitTime()
 		} else if win.Pressed(pixelgl.KeySpace) {
 			checkLastKeyPressed(pixelgl.KeySpace)
 			jumpAnimation(win)
+			yStep = yStep + 10
 			resetWaitTime()
 		} else if win.Pressed(pixelgl.KeyRight) {
 			checkLastKeyPressed(pixelgl.KeyRight)
@@ -85,7 +87,9 @@ func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
 			downAnimation(win)
 			resetWaitTime()
 		} else {
-			if (waitingTime + 3) < time.Now().Second() {
+			if originalY < yStep {
+				jumpAnimation(win)
+			} else if (waitingTime + 3) < time.Now().Second() {
 				waitingAnimation(win)
 			} else {
 				stopAnimation(win)
@@ -95,108 +99,6 @@ func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
 		}
 		time.Sleep(40 * time.Millisecond)
 	}
-}
-
-func stopAnimation(win *pixelgl.Window) {
-	sonicStopPic.drawPicture(win, 0, pixelRightRect)
-}
-
-func waitingAnimation(win *pixelgl.Window) {
-	if frame < 2 {
-		minWaitX = minWaitX + pixelWaitRect
-		maxWaitX = maxWaitX + pixelWaitRect
-		frame = frame + 1
-	} else {
-		frame = 0
-		minWaitX = 0
-		maxWaitX = pixelWaitRect
-	}
-	sonicWaitingPic.drawPicture(win, minWaitX, maxWaitX)
-	time.Sleep(200 * time.Millisecond)
-}
-
-func upAnimation(win *pixelgl.Window) {
-	if frame < 5 {
-		minUpX = minUpX + pixelUpRect
-		maxUpX = maxUpX + pixelUpRect
-		frame = frame + 1
-	}
-	sonicUpPic.drawPicture(win, minUpX, maxUpX)
-}
-
-func downAnimation(win *pixelgl.Window) {
-	if frame < 5 {
-		minDownX = minDownX + pixelDownRect
-		maxDownX = maxDownX + pixelDownRect
-		frame = frame + 1
-	}
-	sonicDownPic.drawPicture(win, minDownX, maxDownX)
-}
-
-func ballAnimation(win *pixelgl.Window) {
-	if frame < 5 {
-		minBallX = minBallX + pixelBallRect
-		maxBallX = maxBallX + pixelBallRect
-		frame = frame + 1
-	} else {
-		frame = 0
-		minBallX = 0
-		maxBallX = pixelBallRect
-	}
-	sonicBallPic.drawPicture(win, minBallX, maxBallX)
-}
-
-func leftAnimation(win *pixelgl.Window) {
-	if frame < 9 {
-		minLeftX = minLeftX - (pixelLeftRect + 1.8)
-		maxLeftX = maxLeftX - pixelLeftRect
-	} else {
-		frame = 0
-		minLeftX = (pixelLeftRect + 1.8) * 8
-		maxLeftX = pixelLeftRect * 9
-	}
-	frame = frame + 1
-	xStep = xStep - 5
-	sonicLeftPic.drawPicture(win, minLeftX, maxLeftX)
-}
-
-func rightAnimation(win *pixelgl.Window) {
-	if frame < 9 {
-		minRightX = minRightX + pixelRightRect
-		maxRightX = maxRightX + pixelRightRect
-	} else {
-		frame = 0
-		minRightX = 0
-		maxRightX = pixelRightRect
-	}
-	frame = frame + 1
-	xStep = xStep + 5
-	sonicRightPic.drawPicture(win, minRightX, maxRightX)
-}
-
-func jumpAnimation(win *pixelgl.Window) {
-	if frame < 8 {
-		minJumpX = minJumpX + pixelJumpRect
-		maxJumpX = maxJumpX + pixelJumpRect
-		yStep = yStep + 2
-	} else {
-		frame = 0
-		minJumpX = 0
-		maxJumpX = pixelJumpRect
-	}
-	frame = frame + 1
-	sonicJumpPic.drawPicture(win, minJumpX, maxJumpX)
-}
-
-/**
-Implementation of [SonicSprites] to draw the specific sprite in the window.
-Using interface each group of sprites invokes this method, avoiding type mismatch
-*/
-func (pic SonicSprites) drawPicture(win *pixelgl.Window, minX float64, maxX float64) {
-	fmt.Printf("Moving... frame:%d .xMin:%f xMax:%f\n", frame, minRightX, maxRightX)
-	sonicSprite := pixel.NewSprite(pic.picture, pixel.R(minX, 0, maxX, 50))
-	movement = pixel.Vec{X: xStep, Y: yStep}
-	sonicSprite.Draw(win, pixel.IM.Moved(movement))
 }
 
 /**
