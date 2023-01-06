@@ -10,8 +10,11 @@ import (
 var introTime = 1
 
 //Initial sprite position in the window
-var step = float64(650)
-var movement = pixel.Vec{X: step, Y: step}
+var originalX = float64(650)
+var originalY = float64(220)
+var xStep = originalX
+var yStep = originalY
+var movement = pixel.Vec{X: xStep, Y: yStep}
 var frame = 0
 var waitingTime = time.Now().Second()
 
@@ -57,7 +60,7 @@ func resetDownVector() {
 	maxDownX = pixelDownRect
 }
 
-//Initial sprite rect min,max vector for Up animation
+//Initial sprite rect min,max vector for Wait animation
 var pixelWaitRect = float64(33)
 var minWaitX = float64(0)
 var maxWaitX = pixelWaitRect
@@ -66,7 +69,12 @@ func resetWaitTime() {
 	waitingTime = time.Now().Second()
 }
 
-//Initial sprite rect min,max vector for Down animation
+//Initial sprite rect min,max vector for Ball animation
 var pixelBallRect = float64(30)
 var minBallX = float64(0)
 var maxBallX = pixelBallRect
+
+//Initial sprite rect min,max vector for Jump animation
+var pixelJumpRect = float64(31)
+var minJumpX = float64(0)
+var maxJumpX = pixelJumpRect

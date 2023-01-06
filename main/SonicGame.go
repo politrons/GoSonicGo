@@ -28,7 +28,8 @@ var logoPic,
 	sonicUpPic,
 	sonicDownPic,
 	sonicWaitingPic,
-	sonicBallPic = loadGamePictures()
+	sonicBallPic,
+	sonicJumpPic = loadGamePictures()
 
 func main() {
 	pixelgl.Run(run)
@@ -59,7 +60,15 @@ func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
 		win.Update()
 		win.Clear(colornames.Grey)
 		greenHillBackground.Draw(win, pixel.IM)
-		if win.Pressed(pixelgl.KeyRight) {
+		if win.Pressed(pixelgl.KeyDown) && win.Pressed(pixelgl.KeySpace) {
+			checkLastKeyPressed(pixelgl.KeyDown)
+			ballAnimation(win)
+			resetWaitTime()
+		} else if win.Pressed(pixelgl.KeySpace) {
+			checkLastKeyPressed(pixelgl.KeySpace)
+			jumpAnimation(win)
+			resetWaitTime()
+		} else if win.Pressed(pixelgl.KeyRight) {
 			checkLastKeyPressed(pixelgl.KeyRight)
 			rightAnimation(win)
 			resetWaitTime()
@@ -70,10 +79,6 @@ func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
 		} else if win.Pressed(pixelgl.KeyUp) {
 			checkLastKeyPressed(pixelgl.KeyUp)
 			upAnimation(win)
-			resetWaitTime()
-		} else if win.Pressed(pixelgl.KeyDown) && win.Pressed(pixelgl.KeySpace) {
-			checkLastKeyPressed(pixelgl.KeyDown)
-			ballAnimation(win)
 			resetWaitTime()
 		} else if win.Pressed(pixelgl.KeyDown) {
 			checkLastKeyPressed(pixelgl.KeyDown)
@@ -151,7 +156,7 @@ func leftAnimation(win *pixelgl.Window) {
 		maxLeftX = pixelLeftRect * 9
 	}
 	frame = frame + 1
-	step = step - 5
+	xStep = xStep - 5
 	sonicLeftPic.drawPicture(win, minLeftX, maxLeftX)
 }
 
@@ -165,8 +170,22 @@ func rightAnimation(win *pixelgl.Window) {
 		maxRightX = pixelRightRect
 	}
 	frame = frame + 1
-	step = step + 5
+	xStep = xStep + 5
 	sonicRightPic.drawPicture(win, minRightX, maxRightX)
+}
+
+func jumpAnimation(win *pixelgl.Window) {
+	if frame < 8 {
+		minJumpX = minJumpX + pixelJumpRect
+		maxJumpX = maxJumpX + pixelJumpRect
+		yStep = yStep + 2
+	} else {
+		frame = 0
+		minJumpX = 0
+		maxJumpX = pixelJumpRect
+	}
+	frame = frame + 1
+	sonicJumpPic.drawPicture(win, minJumpX, maxJumpX)
 }
 
 /**
@@ -176,7 +195,7 @@ Using interface each group of sprites invokes this method, avoiding type mismatc
 func (pic SonicSprites) drawPicture(win *pixelgl.Window, minX float64, maxX float64) {
 	fmt.Printf("Moving... frame:%d .xMin:%f xMax:%f\n", frame, minRightX, maxRightX)
 	sonicSprite := pixel.NewSprite(pic.picture, pixel.R(minX, 0, maxX, 50))
-	movement = pixel.Vec{X: step, Y: 220}
+	movement = pixel.Vec{X: xStep, Y: yStep}
 	sonicSprite.Draw(win, pixel.IM.Moved(movement))
 }
 
@@ -201,7 +220,7 @@ func createWindow() *pixelgl.Window {
 /**
 Function to load all game Pictures
 */
-func loadGamePictures() (SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites) {
+func loadGamePictures() (SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites, SonicSprites) {
 	logoPic, err := loadPicture("sprites/logo.png")
 	greenHillPic, err := loadPicture("sprites/green_hill.png")
 	sonicStopPic, err := loadPicture("sprites/sonic_stop.png")
@@ -211,11 +230,12 @@ func loadGamePictures() (SonicSprites, SonicSprites, SonicSprites, SonicSprites,
 	sonicDownPic, err := loadPicture("sprites/sonic_down.png")
 	sonicWaitingPic, err := loadPicture("sprites/sonic_waiting.png")
 	sonicBallPic, err := loadPicture("sprites/sonic_ball.png")
+	sonicJumpPic, err := loadPicture("sprites/sonic_jump.png")
 
 	if err != nil {
 		panic(err)
 	}
-	return logoPic, greenHillPic, sonicStopPic, sonicLeftPic, sonicRightPic, sonicUpPic, sonicDownPic, sonicWaitingPic, sonicBallPic
+	return logoPic, greenHillPic, sonicStopPic, sonicLeftPic, sonicRightPic, sonicUpPic, sonicDownPic, sonicWaitingPic, sonicBallPic, sonicJumpPic
 }
 
 /**
