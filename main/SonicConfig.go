@@ -32,7 +32,7 @@ func resetUpVector() {
 }
 
 //Initial sprite rect min,max vector for Down animation
-var pixelDownRect = float64(30)
+var pixelDownRect = float64(31)
 var minDownX = float64(0)
 var maxDownX = pixelDownRect
 
