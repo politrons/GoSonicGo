@@ -14,6 +14,10 @@ type SonicSprites struct {
 	picture pixel.Picture
 }
 
+type EnemySprites struct {
+	picture pixel.Picture
+}
+
 type DrawFeature interface {
 	drawPicture(window pixelgl.Window, minX float64, maxX float64)
 }
@@ -29,6 +33,8 @@ var logoPic,
 	sonicWaitingPic,
 	sonicBallPic,
 	sonicJumpPic = loadGamePictures()
+
+var flyPic = loadEnemyPictures()
 
 func main() {
 	pixelgl.Run(run)
@@ -60,15 +66,16 @@ func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
 		win.Update()
 		win.Clear(colornames.Grey)
 		greenHillBackground.Draw(win, pixel.IM)
+		go animateEnemies(win)
 		if win.Pressed(pixelgl.KeyDown) && win.Pressed(pixelgl.KeySpace) {
 			checkLastKeyPressed(pixelgl.KeyDown)
 			ballAnimation(win)
-			yStep = yStep + 2
+			ySonic = ySonic + 2
 			resetWaitTime()
 		} else if win.Pressed(pixelgl.KeySpace) {
 			checkLastKeyPressed(pixelgl.KeySpace)
 			jumpAnimation(win)
-			yStep = yStep + 10
+			ySonic = ySonic + 10
 			resetWaitTime()
 		} else if win.Pressed(pixelgl.KeyRight) {
 			checkLastKeyPressed(pixelgl.KeyRight)
@@ -87,7 +94,7 @@ func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
 			downAnimation(win)
 			resetWaitTime()
 		} else {
-			if originalY < yStep {
+			if originalY < ySonic {
 				jumpAnimation(win)
 			} else if (waitingTime + 3) < time.Now().Second() {
 				waitingAnimation(win)
@@ -138,6 +145,15 @@ func loadGamePictures() (SonicSprites, SonicSprites, SonicSprites, SonicSprites,
 		panic(err)
 	}
 	return logoPic, greenHillPic, sonicStopPic, sonicLeftPic, sonicRightPic, sonicUpPic, sonicDownPic, sonicWaitingPic, sonicBallPic, sonicJumpPic
+}
+
+func loadEnemyPictures() EnemySprites {
+	flyPic, err := loadPicture("sprites/fly.png")
+
+	if err != nil {
+		panic(err)
+	}
+	return EnemySprites{flyPic.picture}
 }
 
 /**

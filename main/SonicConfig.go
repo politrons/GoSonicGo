@@ -9,21 +9,28 @@ import (
 //Intro time
 var introTime = 3
 
-//Initial sprite position in the window
-var originalX = float64(650)
+//Initial sprite position in the window foe Sonic
+var originalX = float64(600)
 var originalY = float64(220)
-var xStep = originalX
-var yStep = originalY
-var movement = pixel.Vec{X: xStep, Y: yStep}
-var frame = 0
+var xSonic = originalX
+var ySonic = originalY
+var movement = pixel.Vec{X: xSonic, Y: ySonic}
+var sonicFrame = 0
 var waitingTime = time.Now().Second()
 
-//Persist and check the latest keyPressed to restart frame.
+//Initial sprite position in the window for Fly
+var originalXFlyEnemy = float64(700)
+var originalYFlyEnemy = float64(280)
+var xFlyEnemy = originalXFlyEnemy
+var yFlyEnemy = originalYFlyEnemy
+var flyFrame = 0
+
+//Persist and check the latest keyPressed to restart sonicFrame.
 var lastKeyPressed pixelgl.Button
 
 func checkLastKeyPressed(button pixelgl.Button) {
 	if lastKeyPressed != button {
-		frame = 0
+		sonicFrame = 0
 	}
 	lastKeyPressed = button
 }
@@ -44,7 +51,7 @@ var minUpX = float64(0)
 var maxUpX = pixelUpRect
 
 func resetUpVector() {
-	frame = 0
+	sonicFrame = 0
 	minUpX = float64(0)
 	maxUpX = pixelUpRect
 }
@@ -55,7 +62,7 @@ var minDownX = float64(0)
 var maxDownX = pixelDownRect
 
 func resetDownVector() {
-	frame = 0
+	sonicFrame = 0
 	minDownX = float64(0)
 	maxDownX = pixelDownRect
 }
@@ -78,3 +85,8 @@ var maxBallX = pixelBallRect
 var pixelJumpRect = float64(31)
 var minJumpX = float64(0)
 var maxJumpX = pixelJumpRect
+
+//Initial sprite rect min,max vector for Jump animation
+var pixelFlyRect = float64(53)
+var minFlyX = float64(0)
+var maxFlyX = pixelFlyRect
