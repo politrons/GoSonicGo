@@ -20,7 +20,7 @@ func animateFly(win *pixelgl.Window) {
 		minFlyX = 0
 		maxFlyX = pixelFlyRect
 	}
-	xFlyEnemy = xFlyEnemy - 5
+	xFlyEnemy = xFlyEnemy - 2
 	flyPic.drawPicture(win, minFlyX, maxFlyX)
 }
 

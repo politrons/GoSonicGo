@@ -29,10 +29,10 @@ var flyFrame = 0
 var lastKeyPressed pixelgl.Button
 
 func checkLastKeyPressed(button pixelgl.Button) {
-	if lastKeyPressed != button {
+	if lastKeyPressed.String() != button.String() {
 		sonicFrame = 0
+		lastKeyPressed = button
 	}
-	lastKeyPressed = button
 }
 
 //Initial sprite rect min,max vector for Right animation

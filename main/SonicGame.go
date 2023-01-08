@@ -66,7 +66,7 @@ func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
 		win.Update()
 		win.Clear(colornames.Grey)
 		greenHillBackground.Draw(win, pixel.IM)
-		go animateEnemies(win)
+		animateEnemies(win)
 		if win.Pressed(pixelgl.KeyDown) && win.Pressed(pixelgl.KeySpace) {
 			checkLastKeyPressed(pixelgl.KeyDown)
 			ballAnimation(win)
@@ -104,7 +104,7 @@ func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
 				resetDownVector()
 			}
 		}
-		time.Sleep(40 * time.Millisecond)
+		time.Sleep(50 * time.Millisecond)
 	}
 }
 
