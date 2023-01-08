@@ -63,8 +63,6 @@ each Picture configured before.
 */
 func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
 	for !win.Closed() {
-		win.Update()
-		win.Clear(colornames.Grey)
 		greenHillBackground.Draw(win, pixel.IM)
 		animateEnemies(win)
 		if win.Pressed(pixelgl.KeyDown) && win.Pressed(pixelgl.KeySpace) {
@@ -105,6 +103,7 @@ func animateGame(greenHillBackground *pixel.Sprite, win *pixelgl.Window) {
 			}
 		}
 		time.Sleep(50 * time.Millisecond)
+		win.Update()
 	}
 }
 
@@ -116,7 +115,7 @@ func createWindow() *pixelgl.Window {
 	cfg := pixelgl.WindowConfig{
 		Title:  "Go Sonic Go!",
 		Bounds: pixel.R(0, 0, 1024, 768),
-		VSync:  true,
+		VSync:  false,
 	}
 	win, err := pixelgl.NewWindow(cfg)
 	if err != nil {

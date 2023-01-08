@@ -21,6 +21,10 @@ func animateFly(win *pixelgl.Window) {
 		maxFlyX = pixelFlyRect
 	}
 	xFlyEnemy = xFlyEnemy - 2
+	//Restart in screen in right side
+	if xFlyEnemy == -72 {
+		xFlyEnemy = 1000
+	}
 	flyPic.drawPicture(win, minFlyX, maxFlyX)
 }
 
@@ -29,7 +33,7 @@ Implementation of [SonicSprites] to draw the specific sprite in the window.
 Using interface each group of sprites invokes this method, avoiding type mismatch
 */
 func (pic EnemySprites) drawPicture(win *pixelgl.Window, minX float64, maxX float64) {
-	fmt.Printf("Moving... EnemyFrame:%d .xMin:%f xMax:%f\n", flyFrame, minX, maxX)
+	fmt.Printf("Moving... EnemyFrame:%d .xMin:%f xMax:%f xVec:%f yVec:%f\n", flyFrame, minX, maxX, xFlyEnemy, yFlyEnemy)
 	enemySprite := pixel.NewSprite(pic.picture, pixel.R(minX, 0, maxX, 50))
 	movement := pixel.Vec{X: xFlyEnemy, Y: yFlyEnemy}
 	enemySprite.Draw(win, pixel.IM.Moved(movement))
