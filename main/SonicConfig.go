@@ -31,8 +31,19 @@ var lastKeyPressed pixelgl.Button
 func checkLastKeyPressed(button pixelgl.Button) {
 	if lastKeyPressed.String() != button.String() {
 		sonicFrame = 0
-		lastKeyPressed = button
+		resetSonic()
 	}
+	lastKeyPressed = button
+}
+
+//Reset all sprite matrix to original values
+func resetSonic() {
+	resetBall()
+	resetJump()
+	resetDownVector()
+	resetRight()
+	resetUp()
+	resetRight()
 }
 
 //Initial sprite rect min,max vector for Right animation
@@ -40,15 +51,30 @@ var pixelRightRect = 36.6
 var minRightX = float64(0)
 var maxRightX = pixelRightRect
 
+func resetRight() {
+	minRightX = float64(0)
+	maxRightX = pixelRightRect
+}
+
 //Initial sprite rect min,max vector for Left animation
 var pixelLeftRect = 37.9
 var minLeftX = (pixelLeftRect + 1.8) * 8
 var maxLeftX = pixelLeftRect * 9
 
+func resetLeft() {
+	minLeftX = (pixelLeftRect + 1.8) * 8
+	maxLeftX = pixelLeftRect * 9
+}
+
 //Initial sprite rect min,max vector for Up animation
 var pixelUpRect = float64(30)
 var minUpX = float64(0)
 var maxUpX = pixelUpRect
+
+func resetUp() {
+	minUpX = float64(0)
+	maxUpX = pixelUpRect
+}
 
 func resetUpVector() {
 	sonicFrame = 0
@@ -81,10 +107,20 @@ var pixelBallRect = float64(30)
 var minBallX = float64(0)
 var maxBallX = pixelBallRect
 
+func resetBall() {
+	minBallX = float64(0)
+	maxBallX = pixelBallRect
+}
+
 //Initial sprite rect min,max vector for Jump animation
 var pixelJumpRect = float64(31)
 var minJumpX = float64(0)
 var maxJumpX = pixelJumpRect
+
+func resetJump() {
+	minJumpX = float64(0)
+	maxJumpX = pixelJumpRect
+}
 
 //Initial sprite rect min,max vector for Jump animation
 var pixelFlyRect = float64(53)
